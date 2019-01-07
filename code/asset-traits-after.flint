@@ -1,0 +1,13 @@
+// With Self type
+struct trait Asset {
+  mutating func transfer(source: inout Self,
+                         amount: Int)
+  { /* a default implementation of transfer.. */ }
+}
+
+struct Wei: Asset {
+  // Wei picks up the transfer function
+  // with correct type
+  mutating func transfer(source: inout Wei,
+                         amount: Int)
+}

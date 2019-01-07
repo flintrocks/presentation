@@ -26,35 +26,126 @@
 
 \begin{document}
 
-\frame{\titlepage} 
+\begin{frame}
+\titlepage
+\end{frame}
 
-\frame{\frametitle{Presentation outline}\tableofcontents}
+\begin{frame}
+\frametitle{Presentation outline}
+\tableofcontents
+\end{frame}
 
 \section{Introduction}
 
-\frame{
-	\inputminted{swift}{code/example.flont}
+\begin{frame}
+\frametitle{Problem statement}
+\end{frame}
+
+\begin{frame}
+\frametitle{Motivation}
+
+\end{frame}
+
+
+% \frame{\frametitle{What you did}
+
+% }
+
+\begin{frame}
+\frametitle{Language features}
+\begin{block}{New language features}
+	{\tiny
+	\begin{itemize}
+		\item Asset trait
+		\item External calls
+		\item Better testing
+		\item Refactored code generation
+		\item General declarations
+	\end{itemize}
+	}
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Asset traits}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+	\inputminted[fontsize=\tiny]{swift}{code/asset-traits-before.flint}
+	Before
+\end{column}
+\begin{column}{0.5\textwidth}
+	\inputminted[fontsize=\tiny]{swift}{code/asset-traits-after.flint}
+	After
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{External calls}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+	\inputminted[fontsize=\tiny]{swift}{code/external-calls-before.flint}
+	Before
+\end{column}
+\begin{column}{0.5\textwidth}
+	\inputminted[fontsize=\tiny]{swift}{code/external-calls-after.flint}
+	After
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Modes}
+\inputminted{swift}{code/modes.flint}
+\end{frame}
+
+\frame{\frametitle{Complete example - Weather station}
 }
 
-\frame{\frametitle{Basics of this and that}
-	\begin{block}{A list of very important things}
-		{\tiny
-		\begin{itemize}
-			\item First thing.
-            \item Second thing.
-		\end{itemize}
-		}
-	\end{block}
-}
+\begin{frame}
+\frametitle{Code generator}
+\inputminted[fontsize=\tiny]{swift}{code/codegen.flint}
+\end{frame}
+
+\begin{frame}
+\frametitle{Toolchain}
+\begin{block}{IDE Integration}
+	{\tiny
+	\begin{itemize}
+		\item Language Server/Client (LSP)
+	\end{itemize}
+	}
+\end{block}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{How you did it}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{explanation}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+	\inputminted{swift}{code/example.flont}
+	Before
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+	\inputminted{swift}{code/example.flont}
+	After
+\end{column}
+\end{columns}
+\end{frame}
 
 \section*{ }
-\frame{
+\begin{frame}
  	\vbox{}
 % 	\vfill
 	\begin{centering}
 	{\LARGE \usebeamercolor[fg]{title} Thank you for your attention}
 	\par
 	\end{centering}
-}
+\end{frame}
 
 \end{document}

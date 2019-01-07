@@ -1,0 +1,11 @@
+// Without Self type
+struct trait Asset {
+  mutating func transfer(source: inout Asset,
+                         amount: Int)
+}
+
+struct Wei: Asset {
+  // This does not allow source to be `Wei`
+  mutating func transfer(source: inout Asset,
+                         amount: Int)
+}
