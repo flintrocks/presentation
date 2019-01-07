@@ -1,0 +1,16 @@
+# https://tex.stackexchange.com/questions/7770/file-extensions-related-to-latex-etc
+.DS_Store
+*.aux
+*.bbl
+*.blg
+*.brf
+*.log
+*.nav
+*.out
+*.snm
+*.pdf
+*.toc
+_minted-presentation
+
+/cw-blx.bib
+/cw.run.xml

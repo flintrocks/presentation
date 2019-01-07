@@ -1,0 +1,101 @@
+\usepackage{tikz}
+\usepackage{minted} % syntax highlighting
+\usetikzlibrary{positioning}
+\usepackage{csquotes}
+
+\definecolor{gris}{rgb}{0.92,0.92,0.92}
+\definecolor{blau-upc}{rgb}{.192,.365,.506}
+
+\setbeamercolor{titlelike}{fg=blau-upc}
+% \setbeamercolor{barra}{bg=white,fg=white}
+\setbeamercolor{capcalera}{bg=blau-upc,fg=white}
+\setbeamercolor{section in toc}{fg=blau-upc}
+\setbeamertemplate{sections/subsections in toc}[circle]
+\setbeamertemplate{itemize items}[circle]
+\setbeamercolor{item}{fg=blau-upc}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamercolor*{block body}{bg=gris}
+\setbeamerfont{block body}{size=\footnotesize}
+\setbeamercolor*{block title}{parent=structure,bg=blau-upc,fg=white}
+
+\setbeamersize{text margin left=12mm,text margin right=12mm}
+\setbeamertemplate{navigation symbols}{}
+
+\defbeamertemplate*{headline}{infolines theme}
+{
+	\begin{beamercolorbox}[wd=\paperwidth,ht=9.5mm,right]{white}%
+		\includegraphics[height=8mm]{./figures/imperial.pdf}\hspace*{1mm}\vskip0.2ex
+	\end{beamercolorbox}
+% 	\begin{beamercolorbox}[wd=\paperwidth,ht=0.5mm,left]{barra}%
+% 		\hspace*{1mm}
+% 	\end{beamercolorbox}
+}
+
+\setbeamertemplate{footline}
+{
+	\hbox{
+	\begin{beamercolorbox}[wd=0.1\paperwidth,ht=10mm,left]{}
+% 		\hspace*{1ex}\includegraphics[height=8mm]{./logotips/imperiallogo.pdf}\vskip 2ex
+	\end{beamercolorbox}
+	\begin{beamercolorbox}[wd=0.8\paperwidth,ht=3ex,center]{}
+		\hspace*{4ex}\insertsection\vskip 4ex
+	\end{beamercolorbox}
+	\begin{beamercolorbox}[wd=0.1\paperwidth,ht=3ex,right]{}
+		\insertpagenumber\hspace*{6ex}\vskip 4ex
+	\end{beamercolorbox}
+	}
+}
+
+\setbeamertemplate{title page}
+{
+	\vbox{}
+	\vfill
+	\begin{centering}
+		{\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle}
+		\vskip0.2em
+		{\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle}
+		\vskip2em\par
+		\small\insertauthor\par
+		\vskip0.7em\par
+		\tiny\insertdate\vskip1em\par
+	\end{centering}
+% 	\vfill
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University Assignment Title Page 
+% LaTeX Template
+% Version 1.0 (27/12/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% WikiBooks (http://en.wikibooks.org/wiki/LaTeX/Title_Creation)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+%\usepackage[a4paper,hmargin=2.8cm,vmargin=2.0cm,includeheadfoot]{geometry}
+%\usepackage{textpos}
+%\usepackage[backend=bibtex,sorting=none]{biblatex}
+%\usepackage{tabularx,longtable,multirow,subfigure,caption}%hangcaption
+%\usepackage{fncylab} %formatting of labels
+%\usepackage{fancyhdr} % page layout
+%\usepackage{url} % URLs
+%\usepackage[english]{babel}
+%\usepackage{amsmath}
+%\usepackage{graphicx}
+%\usepackage{dsfont}
+%\usepackage{epstopdf} % automatically replace .eps with .pdf in graphics
+%\usepackage{array}
+%\usepackage{latexsym}
+%\usepackage[pdftex,hypertexnames=false,colorlinks]{hyperref} % provide links in pdf
+
+% additional

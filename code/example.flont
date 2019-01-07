@@ -1,0 +1,7 @@
+contract A {}
+
+A :: (any lol) {
+  func hello() -> Int {
+    return 2
+  }
+}
