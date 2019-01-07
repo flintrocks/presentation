@@ -1,0 +1,10 @@
+@payable
+public func deposit(implicit value: Wei) {
+  // compilation error: value was not used
+}
+
+@payable
+public func deposit(implicit value: Wei) {
+  self.totalValue.transfer(source: &value)
+  // compilation OK
+}
