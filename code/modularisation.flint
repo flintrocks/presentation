@@ -1,0 +1,8 @@
+import VersionChecker
+
+contract A {}
+A :: (any) {
+  public init() {
+    VersionChecker.checkVersion(1, 3, 1)
+  }
+}

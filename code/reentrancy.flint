@@ -1,0 +1,7 @@
+mutating func withdrawMoney(amount: Int) {
+  if balance[caller] < amount {
+    fatalError()
+  }
+  call(value: Wei(amount))! caller.sendMoney()
+  balance[caller] -= amount
+}

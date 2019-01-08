@@ -1,0 +1,8 @@
+struct MyStruct: Asset { ... }
+
+// Later ...
+let other = Wei(unsafeRawValue: 100)
+let value = MyStruct(unsafeRawValue: 100)
+
+other.transfer(value, 100)
+// Does not compile

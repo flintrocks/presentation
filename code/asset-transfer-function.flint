@@ -1,0 +1,7 @@
+mutating func transfer(source: inout Asset, amount: Int) {
+  // It's easy to forget to include this!
+  if source.getRawValue() < amount { fatalError() }
+
+  source.setRawValue(value: source.getRawValue() - amount)
+  setRawValue(value: getRawValue() + amount)
+}

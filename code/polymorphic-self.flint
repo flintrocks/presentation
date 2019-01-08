@@ -1,0 +1,8 @@
+// struct trait Asset (interface)
+transfer(source: inout Self, amount: Int)
+
+// struct Bitcoin: Asset (implementation)
+transfer(source: inout Bitcoin, amount: Int)
+
+// struct Dogecoin: Asset (implementation)
+transfer(source: inout Dogecoin, amount: Int)

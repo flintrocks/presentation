@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
@@ -8,9 +8,28 @@
 
 %%%%%% TITLE, AUTHOR, DATE DEFINITIONS %%%%%%
 \title{Making Smart Contracts Safer}
-\author{Aurel Bílý, Catalin Craciun, Calin Farcas,\\Constantin Mueller, Yicheng Luo, Niklas Vangerow}
+\author{
+    Aurel Bílý, 
+    Catalin Craciun,
+    Calin Farcas,\\
+    Constantin Mueller, 
+    Yicheng Luo, 
+    Niklas Vangerow
+}
 \date{\today}
 %%%%%%
+
+% A macro to create a slide and section at the same time
+\newcommand{\sectionslide}[1]{%
+  \section{#1}
+  \begin{frame}
+  \begin{center}
+    \vbox{}
+    {\LARGE \usebeamercolor[fg]{title} #1}
+    \par
+  \end{center}
+  \end{frame}
+}
 
 \begin{document}
 
@@ -23,6 +42,7 @@
 \tableofcontents
 \end{frame}
 
+\sectionslide{Introduction}
 % FIRST SIXTY SECONDS
 % Smart contracts have the potential to be a hugely disruptive technology. 
 % They are decentralised applications that could transform areas such as banking, 
@@ -31,67 +51,127 @@
 % a language with many flaws considering smart contracts need to be very safe. 
 % Because of this, Franklin Schrans developed Flint under Susan's supervision. 
 % Flint is a programming language for smart contracts aimed to be much safer while being simple to use. 
-% However, before our work, Flint was not usable in practice due to a number of bugs and the lack of essential features. 
+% However, Flint was not usable in practice due to the lack of essential features. 
 % For our third-year group project we worked on adding those features and 
 % improving the Flint ecosystem to make Flint more useful in the real world.*
 
-% * not actually
+{ % all template changes are local to this group.
+    \setbeamertemplate{navigation symbols}{}
+    \begin{frame}[plain]
+        \begin{tikzpicture}[remember picture,overlay]
+            \node[at=(current page.center)] {
+                \includegraphics[width=\paperwidth]{figures/generic_image.jpg}
+            };
+        \end{tikzpicture}
+     \end{frame}
+}
 
-\section{Problems with Smart Contracts}
+\sectionslide{Problems with Smart Contracts}
+
+% To give you an idea of Flint is and what smart contracts are, here is 
+% a very simple example of one - written in Flint - that allows to deposit and withdraw cryptocurrency,
+% in this case Ether or its smaller denomination, Wei. At the core is a contract
+% that interacts with the world by receiving currency from and sending currency
+% to other addresses, in this case, ANYone may send currency to this contract - using the deposit method -,
+% but the only way currency is withdrawn is if the WITHDRAW method is called -
+% which may only be done by the OWNER. In the real world smart contracts are
+% far more complicated and will often interact with each other.
+\begin{frame}
+\frametitle{Example Contract}
+\inputminted[fontsize=\tiny]{swift}{code/wallet.flint}
+\end{frame}
+
+
 %
 % Problem statement
 %
-% Let's take a step back................
-% Ethereum is a distributed application ecosystem on the blockchain.
+% Before we go into the details of our work, let's take a step back................
+% Ethereum is a distributed application platform on the blockchain.
 % Users may execute arbitrary code snippets running on the Ethereum 
-% Virtual Machine, EVM for short; these applications are called smart contracts.
+% Virtual Machine, EVM for short; we just saw an example of such a code snippet;
+% these are what we call smart contracts.
 % As you can imagine, writing EVM byte-code is not fun, a bit like 
 % writing assembly code by hand.
 % You might know about the Solidity programming language, which aimed
 % to simplify writing smart contracts; it's something like the 
-% PHP of smart contract programming languages.
-% Flint is an attempt at creating a safer, less error prone programming
-% language for Ethereum smart contract development. The underpinning 
-% philosophy is simplicity, and its design has been largely inspired by
-% the Swift programming language. Creating a safe language involves 
+% PHP of smart contract programming languages, as it has few safety features.
+% Flint is an attempt at creating a less error prone programming
+% language. The underpinning philosophy is simplicity, and its design has been largely inspired by
+% Swift. Creating a safe language involves 
 % prohibiting many avoidable programmer errors at compile-time. At the
 % moment, these avoidable errors put hundreds of millions of dollars
 % worth of cryptocurrencies at risk.
 %
-
-\begin{frame}
-\frametitle{Motivation}
-\begin{itemize}
-    \item Writing smart contracts is currently only possible with Solidity, or EVM.
-\end{itemize}
+\begin{frame}{Problems with Ethereum Smart Contracts}
+    \begin{itemize}
+        \item Smart contracts are immutable
+        \item Smart contracts are difficult to program with existing technologies
+        \item Smart contracts \textbf{really need to be safe} as they directly handle currency
+        \item Solidity does not provide a good solution as it lacks safety checks and features
+        \item[$\Rightarrow$] Flint aims to be safer
+    \end{itemize}
 \end{frame}
 
-\section{Problems with Flint}
-% As mentioned before, as of October there were still serious flaws in Flint.
+\sectionslide{Issues with Flint}
+% As mentioned before, as of October, there were still serious flaws with Flint.
 % In particular, Flint does not allow for external calls, i.e. function calls to
 % other contracts, which are an absolute necessity to process currency.
 % In plain words, Flint cannot be used to develop smart contracts without external calls.
 % In addition, Flint - like Solidity - used to treat Ether as integers which 
-% could easily to "losing" currency. Remember that a contract is entirely controlled
+% could easily lead to "losing" currency. Remember that a contract is entirely controlled
 % by its code and that the code is immutable.
 % Also, Flint had no real ecosystem for development and no testing, meaning that there
 % were plenty of additions and improvements for us to make.
+\begin{frame}{Issues with Flint}
+    \begin{itemize}
+        \item No interaction with other smart contracts due to lack of external calls
+        \item Programmers may `lose' currency as it is modelled as simple integers
+        \item Flint lacked a development ecosystem and unit testing
+        \item[$\Rightarrow$] Our goal was to improve all these aspects of Flint
+    \end{itemize}
+\end{frame}
 
-\section{Achievements}
+\sectionslide{Achievements}
+
 \subsection{Asset Traits with Self}
 
 \begin{frame}{What are Asset Traits?}
-% Think of a Flint trait like a Java interface.
-% The purpose of adding an asset trait is to reduce duplication when defining
-%   assets, such as Wei. Reducing duplication prevents a programmer from forgetting
+\centering\mintinline{swift}{struct trait Asset { ... }}
+\\
+
+\begin{itemize}
+    \item Flint traits are similar to Java's interfaces
+    \item Captures the commonalities between different assets, like {\tt Wei}
+\end{itemize}
+% Reducing duplication prevents a programmer from forgetting
 %   to implement safety precautions necessary for functions such as `transfer`
 \end{frame}
+
+\begin{frame}{What are Asset Traits?}
+\centering
+\inputminted{swift}{code/asset-transfer-function.flint}
+\end{frame}
+
 
 \begin{frame}{Cross-Asset Transfers}
 % One thing that we want to prevent is one asset being transferred to another
 % This can be done with a polymorphic self type or generics. 
 % We chose not to implement generics due to our time on the project being limited o
 % and them being complex, going against the language principle of simplicity.
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+  \begin{block}{Not allowed}
+    \inputminted{swift}{code/ca-not-allowed.flint}
+  \end{block}
+\end{column}
+\begin{column}{0.5\textwidth}
+  \begin{block}{Allowed}
+    \inputminted{swift}{code/ca-allowed.flint}
+  \end{block}
+\end{column}
+\end{columns}
+
 \end{frame}
 
 \begin{frame}{Polymorphic Self}
@@ -100,41 +180,78 @@
 % As you can see, Self is treated as the implementing type at the calling site,
 % but functions in place of the trait in the context of the trait.
 % example of type signatures
-\end{frame}
-
-\begin{frame}{Creating an Asset}
-% a code example of how an Asset is implemented
+\inputminted{swift}{code/polymorphic-self.flint}
 \end{frame}
 
 \subsection{Unit Testing}
 \begin{frame}{Why Test?}
+\begin{itemize}
+    \item Not all features implemented
+    \item Tests only cover parts of the codebase, and test end-to-end
+    \item No way to tell whether features have regressed
+    \item Less manual testing, more confidence
+\end{itemize}
 % After working on the compiler for a few weeks, it became increasingly clear
 % that many of the features that we had assumed were implemented, were only
 % implemented partially.
 % Due to a lack of unit tests, we had no way to know whether our features
 % worked in isolation, whether there were any regressions
 % We also had to verify that our new additions worked by testing manually
+% There was a test suite but it only tested the whole compiler, making problems hard to debug
 \end{frame}
-% After working for a few weeks, it became increasingly clear that the lack of proper unit testing was becoming very problematic, since we only had few signals of feature regression. While some tests already existed, they were rather ad-hoc and focused on the overall behaviour of the compiler; there was no unit testing or mocking to allow us to test smaller components in isolation, which would make it easier to track down the source of a problem.
-% 
-% Setting up testing was a major challenge as Swift is a new language. From the start we wanted to have the ability to mock and stub protocols and classes to write effective unit tests but we found that there were several problems with this: First, Swift has very limited reflection capabilities. Reflection in Swift is read-only, which means that any kind of run-time stubbing like done in JMock\footnote{\url{http://jmock.org/}} and other Java testing frameworks is impossible. Second, the ecosystem is not yet very mature. Swift frameworks are often created by independent developers as industry adoption has been fairly slow. There are several testing frameworks on the Internet but all of them suffer from lack of maintenance, often being outdated and incompatible with Swift 4.2, the version of Swift that we are targeting.
-% 
-% Overcoming the reflection issue meant taking an approach that is applied in other languages, such as Go, that lack powerful reflection capabilities, which is static code generation. Essentially, we create stubs and mocks for all of our protocols and classes ahead of time by analysing the source code, and compile these into our unit testing target. To enable mocks to be used in place of concrete implementations, Swift forces us to use protocols or classes as structures cannot be subclassed.
-% 
-% Implementing this type of code generation from scratch is a significant time investment. In our search we had attempted to integrate several different frameworks, including SwiftMock\footnote{\url{https://github.com/mflint/SwiftMock}} and had even considered to write the code generation or boilerplate ourselves. After many hours of searching, we found a framework called Cuckoo\footnote{\url{https://github.com/Brightify/Cuckoo} and our fork \url{https://github.com/flintrocks/Cuckoo}} which met all of the requirements that we had:
-% 
-% Easy integration: We want the framework to be easy to integrate into the project and into an existing codebase with minimal code changes required.
-% Low boilerplating: We wish to automate the majority (or all) of the workflow.
-% Easy-to-use API: Writing tests should be familiar and intuitive, an API for mock specification and verification should be similar to other established frameworks in the industry.
-% 
-% Integrating Cuckoo proved to be a challenging task. Cuckoo was not updated for the version of Swift we were targeting, and wholly incompatible with Linux. Since our development environments were cross-platform and our continuous integration ran on Linux, we needed to keep our codebase compatible with both macOS and Linux. As a result, we made a fork of Cuckoo and its dependencies and slowly updated them to work on Swift 4.2 as well as on Linux. In the long term this means that there are additional frameworks to maintain, but the hope is that the changes that we have made can either be contributed back to the original projects or that the maintainers find some time and make their own modifications to allow Swift 4.2 and Linux compatibility.
-% 
-% Once we had set up mocking, we had to choose a unit testing framework. We chose XCTest as it is supported by Apple and integrated into both the Swift package manager, which is used to compile the project and its dependencies, and Xcode. The Flint compiler is organised into several `modules' that allow us to use and re-use different parts of the compiler for a set of targets (tests, flintc, IDE integration, etc). With XCTest we were able to create test targets that correspond to these modules and contain tests that test code defined within those modules. Our Makefile allows us to compile all mocks and stubs prior to building the test targets themselves to guarantee that their interfaces are up to date.
-% 
-% Writing tests is a major undertaking and should ideally have been done from the start of the project. As we did not have much time to execute a major refactoring of the codebase to make testing easier, we decided to focus on a select few units and wrote several tests for these to demonstrate how a test can be written. Writing tests retroactively requires an intricate knowledge of the functionality and specification of each unit, but in the future, further tests need to be written to increase the code coverage. In some of our work following the availability of testing in the project, we opted to use a Test Driven Development (TDD) workflow to test our assumptions and specify our code well. Below is an example of a unit test, showing the environment of an ASTPassContext stubbed with a faux testing response.
+
+\begin{frame}{Mocking Framework Requirements}
+\begin{itemize}
+    \item Easy integration: integrate with minimal code changes
+    \item Low boilerplating: automate the majority of the workflow
+    \item Easy-to-use API: testing API should be familiar
+\end{itemize}
+% Easy integration: integrate into the project with minimal code changes
+% Low boilerplating: Automate the majority of the workflow.
+% Easy-to-use API: Writing tests should be familiar and intuitive, API similar to established frameworks.
+\end{frame}
+
+\begin{frame}{The Road to Mocking}
+\begin{center}
+    \begin{itemize}
+        \item Mocking and stubbing like JMock
+        \item Swift has read-only reflection
+        \item Cuckoo was outdated and did not work on Linux
+    \end{itemize}
+\end{center}
+% we wanted to support mocking and stubbing like JMock.
+% swift only has read-only reflection, requiring all stubs to be declared 
+%   at compile-time rather than dynamically at runtime like JMock.
+% We wanted to use code generation to create these stubs before compilation.
+% We tried several approaches, including implementing this code generation ourselves
+%   before finding Cuckoo, a framework that implements an API similar to JMock.
+% Cuckoo is a framework that we wanted to integrate, but it was outdated
+%   as the swift ecosystem is immature and packages are not regularly updated.
+% We had to update Cuckoo and many of its dependencies to work on Swift 4.2 and 
+%   to retain compatibility with Linux
+% Cuckoo employs powerful code generation
+\end{frame}
+
+\begin{frame}{Testing Framework}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \inputminted[fontsize=\tiny]{swift}{code/unit-test.flint}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{itemize}
+            \item XCTest integrated into Xcode and SPM
+            \item Code requires extensive refactoring to make testing possible
+            \item TDD approach used
+        \end{itemize}
+    \end{column}
+\end{columns}
+% For our overall testing framework, we chose XCTest as it was integrated into Xcode and the Swift package manager.
+% We did not end up writing a lot of tests because we wanted to implement more features. 
+% The code is also written in a manner that requires refactoring into distinct units to make testing them in isolation possible.
+% For some features we took a Test Driven Development approach, developing a test and seeing it fail before covering the case in the implementation.
+\end{frame}
 
 \subsection{General Improvements}
-
 \begin{frame}
 % We have also implemented/fixed/improved a number of smaller features, many of which were found while trying to solve different problems.
 \frametitle{General Improvements}
@@ -147,36 +264,154 @@
 
 \begin{frame}
 % Due to the nature of the parser, the dot operator was right associative, making it completely impractical to access nested fields of a struct. This was fixed by performing rotations for the dot operator after parsing. 
-\frametitle{Right associativity of the dot operator}
+\frametitle{Right Associativity of the Dot Operator}
 \begin{itemize}
-    \item a.(b.(c.d)) vs ((a.b).c).d
+    \item \mintinline{swift}{a.(b.(c.d))} vs \mintinline{swift}{((a.b).c).d}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 % Unified the declaration syntax for events and functions to increase clarity.
-\frametitle{Events and functions}
+\frametitle{Events and Functions}
 \begin{itemize}
     \item Unify the declaration syntax
     \item Implement default parameters for functions (previously only for events - not working)
 \end{itemize}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+	        \inputminted[fontsize=\small]{swift}{code/events-before.flint}
+	        \centering Before
+        \end{column}
+        \begin{column}{0.5\textwidth}
+	        \inputminted[fontsize=\small]{swift}{code/events-after.flint}
+	        \centering After
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
-% Unified the declaration syntax for events and functions to increase clarity.
+% We came up with new logic for checking function call argument types, including for default parameters. We are also now enforcing labels and Swift-like ordering for parameters.
 \frametitle{Function Call Parameters}
 \begin{itemize}
-    \item New logic for parameter checking (includes default parameters)
+    \item Improved logic for parameter checking (includes default parameters)
     \item Enforce labels and Swift-like ordering
 \end{itemize}
 \end{frame}
 
 % These feed into the Demo
 \subsection{Language Server Protocol}
-\subsection{External Calls with Error Handling}
-\section{Demo}
 
-\section{Extensions}
+% LSP is a clean way to implement IDE integration, by having just one implementation of a protocol that all IDEs support. The way it works is pretty simple, the IDE is sending some events and the LSP server returns back actions or content.
+\begin{frame}
+\frametitle{Language Server Protocol}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/lsp.png}
+    \caption* {LSP architecture \\ \tiny {https://code.visualstudio.com/api/language-extensions/language-server-extension-guide}}
+\end{figure}
+\end{frame}
+
+% One of the main highlights here is the wiring of the LS with the flint compiler. We initially implemented it as compilation when the user manually saves the file, but what we really wanted was to have auto-compilation. This was probably the trickiest part, since LSP does not support it by default, so we had to simulate it. Since every LSP message is processed asynchronously, we were able to sleep inside the thread for our 2 second period of time and then check if any messages came through while the thread was sleeping. If no messages came through, we would save the "file string" to a temporary location and run the flint compiler on it.
+\begin{frame}
+\frametitle{LSP - Compilation and Auto-saving}
+\begin{itemize}
+    \item Wire LSP to use the flintc compiler for bringing compilation errors and warnings into the editor
+    \item Initially compiling when the user saves the file
+    \item Implement auto-compilation when the user stops editing the file for 2 seconds
+    \begin{itemize}
+        \item LSP not supporting it by default
+        \item should not interfere with auto-saving
+        \item 'temporary file' implementation and thread sleeping
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{External Calls with Error Handling}
+
+% Ethereum smart contracts are indeed Turing-complete, so it is possible to implement a wide variety of applications in EVM code. Naturally this would not be as useful if smart contracts could only be called by Ethereum users. So in EVM, smart contracts can call other smart contracts. This allows smart contracts to exchange data, but it is at the same time the mechanism used for paying Wei to other contracts.
+\begin{frame}{External Calls}
+    \begin{itemize}
+        \item Smart contracts can represent microservice-like architectures in Ethereum
+        \item `Calling' another contract $\Rightarrow$ data, Gas (computation time), and Wei
+    \end{itemize}
+\end{frame}
+
+% There are many issues with allowing external calls, however. Ethereum at its core is based around lack of trust. Cryptographic signatures, public ledgers and transactions, verifiable state, etc. all serve to replace trust in other nodes with computation that is hard or impossible to forge. What consequences can an external call have?
+% Can a contract be trusted? Not by default, but it may be verified by a third party (do we trust the third party?), or it may be our own.
+% Is the interface specified correctly? If not, our external call will go through, but will not call the correct function!
+% Will the call fail completely? It may, we need to make sure our own contract handles failures properly.
+% What code will the contract run? During an external call, the called contract takes over execution - it can execute any instructions. It does not have access to the state or memory of our (calling) contract, but this is still dangerous, as demonstrated in the following slide (re-entrancy attack).
+\begin{frame}{Problems with External Calls}
+    \begin{itemize}
+        \item Can a contract be trusted?
+        \item Is the contract's ABI (interface) specified correctly?
+        \item Will the call fail completely?
+        \item What code will the contract run?
+        \item[$\Rightarrow$] Introducing microservices into a network based on antitrust is dangerous; many Ethereum exploits based around external calls
+    \end{itemize}
+\end{frame}
+
+% Here is a simple function of a simulated bank. Assume 'balance' contains amounts of Wei owned by some addresses. Now suppose the address 'caller' calls this function to withdraw some money from its attack.
+% (for audience, hopefully) What is the problem in this code? Consider the problems highlighted in the previous slide.
+\begin{frame}{Re-entrancy Attack}
+    \inputminted{swift}{code/reentrancy.flint}
+\end{frame}
+
+% This is what the problem is - we can create a contract that exploits this specific bank contract. Recall that transferring money to a contract involves an external call, so the bank has to call 'sendMoney' (or any function) of the 'caller' to give it money. What if 'sendMoney' calls 'bank.withdrawMoney' again? The result is that the bank would run dry of all of its money! Note that the balance of the client is updated AFTER the money is sent - but during this call, the money is requested again and again.
+\begin{frame}{Re-entrancy Attack}
+    \inputminted{swift}{code/reentrancy2.flint}
+\end{frame}
+
+% Unfortunately, we could not solve some problems inherent in Ethereum, not only due to time constraints. However, we aimed to make external calls as safe as possible in Flint.
+% Any external contract must have its interface specified using the special external trait syntax. Because the majority of smart contracts on Ethereum are written in Solidity, the Solidity ABI is the network-wide standard for specifying function signatures. This is why types in function signatures use Solidity types (e.g. int256 instead of the Flint Int).
+% Any address must be made into an instance of an external trait before it can be used for external calls.
+% At the callsite, we specify all the parameters; throughout Flint, parameter labels are required.
+% Since we use Solidity types, we introduced casting to convert to and from Flint types. At runtime, these casts make sure that the source value fits into the target type (i.e. 1024 would not successfully cast into int8).
+% Notice also the 'value' next to the 'call' keyword - this is how a programmer specifies the amount of Wei to be paid during the external call.
+% Finally, every external call must either be in a do-catch block, or be written as 'call!' (hopefully alerting the programmer), which reverts the transaction on failure.
+% Compared to Solidity, this is an immense improvement, because Solidity allows type-unsafe calls without interfaces, doesn't force error handling, etc.
+\begin{frame}{External Calls in Flint}
+    \inputminted{swift}{code/external-calls.flint}
+\end{frame}
+
+% (just a summary of the above)
+\begin{frame}{External Calls in Flint}
+    \begin{itemize}
+        \item Type-safe (+ runtime value checks)
+        \item Errors revert (\mintinline{swift}{call!}) or have to be handled (\mintinline{swift}{call} in \mintinline{swift}{do ... catch})
+        \item `Hyper-parameters' (\texttt{value}, \texttt{gas}) are separate from function arguments
+    \end{itemize}
+\end{frame}
+
+\subsection{Code Generation}
+
+\begin{frame}{Code Generation}
+
+Wrong abstraction is the root of all evil.
+% what does this even mean
+\end{frame}
+
+\begin{frame}{Nested \texttt{do}-\texttt{catch}}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \inputminted[fontsize=\small]{swift}{code/nested-do.flint}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \inputminted[fontsize=\small]{swift}{code/nested-do-catch.flint}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Refactor Code Generator}
+\begin{itemize}
+    \item String concatenation $\Rightarrow$ Representation for YUL IR.
+    \item New Emitter API for Codegen adequate for complex code generation.
+\end{itemize}
+\end{frame}
+
+\sectionslide{Demo}
+
+\sectionslide{Extensions}
 % Linear types are a more integrated version of the Asset traits that we have implemented. These types might be implemented with additional syntax and memory operations, allowing variables that hold quantities of an asset that can be split atomically, never duplicated, and never destroyed\cite{flint-paper}. For example, with an asset such as Wei in the context of a @payable contract function, this means we add a semantic check that ensures that the entire value of the incoming asset value is transferred to another instance to prevent its destruction.
 \subsection{Linear Types}
 
@@ -196,200 +431,184 @@
 % Adding modules allows a contract definition to be split across multiple source files and for the inclusion and distribution of user-made libraries and frameworks.
 \subsection{Modularisation}
 
+\begin{frame}
+\frametitle{Modularisation}
+\begin{itemize}
+    \item Allow more complex contracts to be split into multiple files
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Modularisation Example}
+\inputminted{swift}{code/modularisation.flint}
+\end{frame}
+
 % A package manager has long been a requested feature, but until we implemented external calls there was no reason to have one because there would've been no way to call another contract. Additionally, since the language does not currently support modules, there is no way to import code from another Flint program. Once modules and a Flint ABI are supported, there will be a better case for having a package manager.
 \subsection{Package Manager}
 
 \begin{frame}
- 	\vbox{}
-% 	\vfill
-	\begin{centering}
-	{\LARGE \usebeamercolor[fg]{title} Thanks for watching, please commend and subscribe and SMASH that mf like button}
-	\par
-	\end{centering}
-\end{frame}
-%﷽﷽ FIN ﷽﷽
-%﷽﷽ FIN ﷽﷽
-%﷽﷽ FIN ﷽﷽
-%﷽﷽ FIN ﷽﷽
-
-\begin{frame}
-\frametitle{Example Contract}
-\inputminted[fontsize=\tiny]{swift}{code/wallet.flint}
-\end{frame}
-
-\begin{frame}{Codebase}
-\begin{figure}[htbp]
-\centering
-\resizebox {\columnwidth} {!} {
-\begin{tikzpicture}[%
-	main node/.style={
-		rectangle,
-		fill=gray!20,
-		draw,
-		minimum width=3cm,
-		minimum height=1.3cm,
-		inner sep=0pt,
-		%text height=1.5ex,
-		text width=3cm,
-		%text depth=.25ex,
-		align=center
-	},
-	large node/.style={
-		rectangle,
-		fill=gray!20,
-		draw,
-		minimum width=4cm,
-		minimum height=2.3cm,
-		inner sep=0pt,
-		%text height=1.5ex,
-		text width=4cm,
-		%text depth=.25ex,
-		align=center
-	},
-]
-	\node[main node] (1) {Source code};
-	\node[main node] (2) [right = 2.5cm of 1] {Tokens};
-	\node[main node] (3) [right = 2.5cm of 2] {AST};
-	\node[large node] (4) [below = 1cm of 3] {Processed AST \\ + Additional \\ program information};
-	\node[main node] (5) [left = 2cm of 4] {YUL \\ representation};
-	\node[main node] (6) [left = 2.5cm of 5] {Binary};
-	\path[draw,thick,->]
-	(1) edge node [above] {Lexer} (2)
-	(2) edge node [above] {Parser} (3)
-	(3) edge node [right] {AST passes} (4)
-	(4) edge node [above,text width=1.9cm,align=center] {IR generation} (5)
-	(5) edge node [above,text width=1.9cm,align=center] {Solidity compiler} (6);
-\end{tikzpicture}
-}
-\caption{Graphic representation of the Flint compilation process.}
-\label{flint-compilation}
-\end{figure}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Wei}
-\end{frame}
-
-\begin{frame}
-\frametitle{Addresses and Callers}
-\end{frame}
-
-
-\begin{frame}{Flint: Before and After}
-\begin{columns}
-    \begin{column}{0.5\textwidth}
-        \includegraphics[scale=0.5]{figures/flint-fire.jpg}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-        \includegraphics[scale=0.2]{figures/flint-after.jpg}
-    \end{column}
-\end{columns}
-\end{frame}
-
-\begin{frame}
-\frametitle{Programming Languages for Smart Contracts}
-\begin{columns}
-\begin{column}{0.33\textwidth}
-    \begin{block}{EVM}
-    	\begin{itemize}
-        \item Assembly for Ethereum
-        \item Powerful but cumbersome, not safe.
-        \end{itemize}
-    \end{block}
-\end{column}
-\begin{column}{0.33\textwidth}
-    \begin{block}{Solidity}
-        \begin{itemize}
-        \item PHP for Ethereum
-        \item Not safe
-        \end{itemize}
-    \end{block}
-\end{column}
-\begin{column}{0.33\textwidth}
-    \begin{block}{Flint}
-    \begin{itemize}
-    \item Safe
-    \item Safe
-    \item Safe
-    \end{itemize}
-    \end{block}
-\end{column}
-
-\end{columns}
-\end{frame}
-
-\begin{frame}
-\frametitle{Language features}
+\frametitle{Package Manager}
 \begin{itemize}
-	\item Asset trait
-	\item External calls
-	\item Better testing
-	\item Refactored code generation
-	\item General declarations
+    \item A smart contract tracking deployed Flint contracts
+    \item Would allow modules to be imported from addresses in a type-safe manner
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Asset traits}
-\begin{columns}
-\begin{column}{0.5\textwidth}
-	\inputminted[fontsize=\tiny]{swift}{code/asset-traits-before.flint}
-	Before
-\end{column}
-\begin{column}{0.5\textwidth}
-	\inputminted[fontsize=\tiny]{swift}{code/asset-traits-after.flint}
-	After
-\end{column}
-\end{columns}
+\begin{frame}
+\frametitle{Package Manager Example}
+\inputminted{swift}{code/fpm.flint}
+\end{frame}
+
+\sectionslide{Conclusion}
+%
+% We would like to conclude by summarising our work and what we have learnt.
+% By adding external calls and exception handling to the language we have made
+% Flint much more usable and able to interact with the real world.
+% By adding - amongst other features - Asset traits, we have added a feature that
+% will make Flint more useful than languages like Solidity in the future.
+% The Language Server Protocol implementation has hugely improved the Flint ecosystem.
+% In doing all this, we have learnt a lot; not just about the Ethereum-specific parts
+% but of course about compiler development and more generally about software engineering.
+% Still, there is a lot more interesting work to be done to make smart contracts safer.
+%
+\begin{frame}{Conclusion}
+    \begin{center}
+        \begin{itemize}
+            \item We added features that make Flint more \textbf{usable}
+            \item We added features that make Flint more \textbf{useful}
+            \item We learned a lot about the \textbf{Ethereum ecosystem}, \textbf{compiler development} and \textbf{software engineering}
+            \item There is huge potential for \textbf{further improvements}, in particular as the Ethereum ecosystem evolves
+        \end{itemize}
+    \end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{External calls - Modes}
-\inputminted[fontsize=\small]{swift}{code/modes.flint}
+ 	\vbox{}
+	\begin{center}
+	\LARGE\usebeamercolor[fg]{title} Thank you for your attention
+	\end{center}
 \end{frame}
-
-\frame{\frametitle{Complete example - Weather station}
-}
-
-% We also improved the code generation phase of the Flint compiler, which enables us to implement code generation for exception handling and improves the extensibility of the code generator.
-
-% Prior to our refactor, the code generator was architected around simple string concatenation. This was useful as a first prototype, demonstrating that IR conforming to the YUL specification can be generated successfully. However, the implementation introduced complications that prohibited further extension and improvement, such as making it impossible to get a reference to the result of an expression.
-
-% With the initial implementation, it was impossible to generate code for external calls since we needed to store the success status of external calls, in addition to value returned. Our very first attempt at the refactoring creates function signature in the for for of f -> (preamble, expression) where the preamble represented ‘setup’ code and the expression was simply an identifier pointing to the result of evaluating the code. However, there is a lot of preamble to keep track of.
-
-% Lack of jump makes codegen for do-catch difficult. This requires backtracking of the most recent outer do-catch block. We use a stack to keep track of that.
-
-% ```duplication is far cheaper than the wrong abstraction'''
-
-% We make the codegen more sophisticated by introducing types for YUL IR. This is
-% code gen done right.
-% Another software engineering group worked on improving the YUL IR and implementing a new compiler for YUL. Their implementation might introduce useful extensions to YUL. With this refined design, we can easily extend our YUL definitions and utilise these new extensions.
+%﷽﷽ FIN ﷽﷽
+%﷽﷽ FIN ﷽﷽
+%﷽﷽ FIN ﷽﷽
+%﷽﷽ FIN ﷽﷽
 
 
-\begin{frame}
-\frametitle{Code generator}
-\inputminted[fontsize=\tiny]{swift}{code/codegen.flint}
-\end{frame}
+% \begin{frame}{Flint: Before and After}
+% \begin{columns}
+%    \begin{column}{0.5\textwidth}
+%        \centering
+%        \includegraphics[scale=0.5]{figures/flint-fire.jpg}
+%    \end{column}
+%    \begin{column}{0.5\textwidth}
+%        \centering
+%        \includegraphics[scale=0.2]{figures/flint-after.jpg}
+%    \end{column}
+% \end{columns}
+% \end{frame}
 
-\begin{frame}
-\frametitle{Toolchain}
-\begin{block}{IDE Integration}
-	{\tiny
-	\begin{itemize}
-		\item Language Server/Client (LSP)
-	\end{itemize}
-	}
-\end{block}
-\end{frame}
+% \begin{frame}
+% \frametitle{Programming Languages for Smart Contracts}
+% \begin{columns}
+% \begin{column}{0.33\textwidth}
+%     \begin{block}{EVM}
+%     	\begin{itemize}
+%         \item Assembly for Ethereum
+%         \item Powerful but cumbersome, not safe.
+%         \end{itemize}
+%     \end{block}
+% \end{column}
+% \begin{column}{0.33\textwidth}
+%     \begin{block}{Solidity}
+%         \begin{itemize}
+%         \item PHP for Ethereum
+%         \item Not safe
+%         \end{itemize}
+%     \end{block}
+% \end{column}
+% \begin{column}{0.33\textwidth}
+%     \begin{block}{Flint}
+%     \begin{itemize}
+%     \item Safe
+%     \item Safe
+%     \item Safe
+%     \end{itemize}
+%     \end{block}
+% \end{column}
 
-\begin{frame}
-\frametitle{Toolchain}
-\begin{figure}
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/lsp-use.png}
-    \\ LSP client running in VSCode
-    \label{fig:my_label}
-\end{figure}
-\end{frame}
+% \end{columns}
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{Language features}
+% \begin{itemize}
+% 	\item Asset trait
+% 	\item External calls
+% 	\item Better testing
+% 	\item Refactored code generation
+% 	\item General declarations
+% \end{itemize}
+% \end{frame}
+
+% \begin{frame}\frametitle{Asset traits}
+% \begin{columns}
+% \begin{column}{0.5\textwidth}
+% 	\inputminted[fontsize=\tiny]{swift}{code/asset-traits-before.flint}
+% 	Before
+% \end{column}
+% \begin{column}{0.5\textwidth}
+% 	\inputminted[fontsize=\tiny]{swift}{code/asset-traits-after.flint}
+% 	After
+% \end{column}
+% \end{columns}
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{External calls - Modes}
+% \inputminted[fontsize=\small]{swift}{code/modes.flint}
+% \end{frame}
+
+% \frame{\frametitle{Complete example - Weather station}
+% }
+
+% % We also improved the code generation phase of the Flint compiler, which enables us to implement code generation for exception handling and improves the extensibility of the code generator.
+
+% % Prior to our refactor, the code generator was architected around simple string concatenation. This was useful as a first prototype, demonstrating that IR conforming to the YUL specification can be generated successfully. However, the implementation introduced complications that prohibited further extension and improvement, such as making it impossible to get a reference to the result of an expression.
+
+% % With the initial implementation, it was impossible to generate code for external calls since we needed to store the success status of external calls, in addition to value returned. Our very first attempt at the refactoring creates function signature in the for for of f -> (preamble, expression) where the preamble represented ‘setup’ code and the expression was simply an identifier pointing to the result of evaluating the code. However, there is a lot of preamble to keep track of.
+
+% % Lack of jump makes codegen for do-catch difficult. This requires backtracking of the most recent outer do-catch block. We use a stack to keep track of that.
+
+% % ```duplication is far cheaper than the wrong abstraction'''
+
+% % We make the codegen more sophisticated by introducing types for YUL IR. This is
+% % code gen done right.
+% % Another software engineering group worked on improving the YUL IR and implementing a new compiler for YUL. Their implementation might introduce useful extensions to YUL. With this refined design, we can easily extend our YUL definitions and utilise these new extensions.
+
+
+% \begin{frame}
+% \frametitle{Code generator}
+% \inputminted[fontsize=\tiny]{swift}{code/codegen.flint}
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{Toolchain}
+% \begin{block}{IDE Integration}
+% 	{\tiny
+% 	\begin{itemize}
+% 		\item Language Server/Client (LSP)
+% 	\end{itemize}
+% 	}
+% \end{block}
+% \end{frame}
+
+% \begin{frame}
+% \frametitle{Toolchain}
+% \begin{figure}[H]
+%     \caption*{LSP client running in VSCode}
+%     \centering
+%     \includegraphics[width=0.5\textwidth]{figures/lsp-use.png}
+% \end{figure}
+% \end{frame}
 
 \end{document}

@@ -1,0 +1,13 @@
+external trait Bank {
+  @payable func sendMoney(to: string) -> int256
+}
+// Later ...
+do {
+  let bank: Bank = Bank(address: 0x...)
+  let balance: Int
+    = (call(value: Wei(100)) bank.sendMoney(
+          to: "Joe" as! string
+        )) as! Int
+} catch is ExternalCallError {
+  // handle gracefully
+}

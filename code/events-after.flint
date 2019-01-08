@@ -1,0 +1,9 @@
+event eventA(
+    addr: Address,
+    y: Int
+)
+
+event eventWithDefault(
+    addr: Address, 
+    value: Int = 40
+)

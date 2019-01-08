@@ -1,0 +1,9 @@
+event eventA {
+    let addr: Address
+    let y: Int
+}
+
+event eventWithDefault {
+    let addr: Address
+    let value: Int = 40
+}
