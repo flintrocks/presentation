@@ -2,22 +2,24 @@ contract Lottery {
   let ticketPrice: Int
   let oddsThreshold: Int
   var jackpot: Wei = Wei(unsafeRawValue: 0)
+}
 
+Lotter :: sender <- (any) {
   public init(ticketPrice: Int, oddsThreshold: Int) {
     self.ticketPrice = ticketPrice
     self.oddsThreshold = oddsThreshold
   }
 
   @payable
-  public mutating func buyTicket(implicit value: Wei, 
-        implicit sender: Address) -> Bool :: (any) {
+  public mutating func buyTicket(implicit value: Wei) -> Bool {
     if value.getRawValue() != ticketPrice { fatalError() }
     jackpot.transfer(source: &value)
+    var success: Bool = false
     if randomNumber() < oddsThreshold {
       send(address: sender, value: &jackpot)
-      return true
+      success = true
     }
-    return false
+    return success
   }
 
   func randomNumber() -> Int { // ... }
