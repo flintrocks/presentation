@@ -4,5 +4,5 @@ struct MyStruct: Asset { ... }
 let other = Wei(unsafeRawValue: 100)
 let value = MyStruct(unsafeRawValue: 100)
 
-other.transfer(value, 100)
+other.transfer(source: &value, amount: 100)
 // Does not compile
