@@ -4,7 +4,7 @@ contract Lottery {
   var jackpot: Wei = Wei(unsafeRawValue: 0)
 }
 
-Lotter :: sender <- (any) {
+Lottery :: sender <- (any) {
   public init(ticketPrice: Int, oddsThreshold: Int) {
     self.ticketPrice = ticketPrice
     self.oddsThreshold = oddsThreshold
