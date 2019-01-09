@@ -1,8 +1,8 @@
 struct MyStruct: Asset { ... }
 
 // Later ...
-let other = MyStruct(unsafeRawValue: 100)
-let value = MyStruct(unsafeRawValue: 100)
+let other = MyStruct(unsafeRawValue: 1)
+let value = MyStruct(unsafeRawValue: 1)
 
-other.transfer(source: &value, amount: 100)
+other.transfer(source: &value, amount: 1)
 // 'value' is now 0, 'other' is now 200
