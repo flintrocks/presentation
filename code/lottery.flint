@@ -1,0 +1,24 @@
+contract Lottery {
+  let ticketPrice: Int
+  let oddsThreshold: Int
+  var jackpot: Wei = Wei(unsafeRawValue: 0)
+
+  public init(ticketPrice: Int, oddsThreshold: Int) {
+    self.ticketPrice = ticketPrice
+    self.oddsThreshold = oddsThreshold
+  }
+
+  @payable
+  public mutating func buyTicket(implicit value: Wei, 
+        implicit sender: Address) -> Bool :: (any) {
+    if value.getRawValue() != ticketPrice { fatalError() }
+    jackpot.transfer(source: &value)
+    if randomNumber() < oddsThreshold {
+      send(address: sender, value: &jackpot)
+      return true
+    }
+    return false
+  }
+
+  func randomNumber() -> Int { // ... }
+}

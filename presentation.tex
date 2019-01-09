@@ -37,18 +37,14 @@
 \titlepage
 \end{frame}
 
-\begin{frame}
-\frametitle{Contents}
-\tableofcontents
-\end{frame}
-
 \sectionslide{Introduction}
 % FIRST SIXTY SECONDS
 % Smart contracts have the potential to be a hugely disruptive technology. 
 % They are decentralised applications that could transform areas such as banking, 
 % insurance and even our voting system. 
 % At the moment, most smart contracts are written in Solidity, 
-% a language with many flaws considering smart contracts need to be very safe. 
+% a language with many flaws considering smart contracts need to be very safe,
+% as once deployed they can never be changed.
 % Because of this, Franklin Schrans developed Flint under Susan's supervision. 
 % Flint is a programming language for smart contracts aimed to be much safer while being simple to use. 
 % However, Flint was not usable in practice due to the lack of essential features. 
@@ -69,42 +65,42 @@
 \sectionslide{Problems with Smart Contracts}
 
 % To give you an idea of Flint is and what smart contracts are, here is 
-% a very simple example of one - written in Flint - that allows to deposit and withdraw cryptocurrency,
-% in this case Ether or its smaller denomination, Wei. At the core is a contract
-% that interacts with the world by receiving currency from and sending currency
-% to other addresses, in this case, ANYone may send currency to this contract - using the deposit method -,
-% but the only way currency is withdrawn is if the WITHDRAW method is called -
-% which may only be done by the OWNER. In the real world smart contracts are
-% far more complicated and will often interact with each other.
+% a very simple example of one that works as a lottery.
+% The creator initialises the smart contract with a ticket price and a winning
+% number threshold used to determine a winner.
+% Anyone can then send currency to the contract which sends back the entire jackpot
+% if the owner wins. Everyone can verify the smart contract for themselves and knows
+% that it cannot change, so the system does not rely on trust unlike lotteries 
+% where you need to trust the organisers not to tamper with the numbers.
+% We can think about a smart contract
+% as a REST web interface as shown by the diagram on the right.
 \begin{frame}
-\frametitle{Example Contract}
-\inputminted[fontsize=\tiny]{swift}{code/wallet.flint}
+\frametitle{Example Contract - Lottery}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+  \inputminted[fontsize=\tiny]{swift}{code/lottery.flint}
+\end{column}
+\begin{column}{0.5\textwidth}
+  \includegraphics[scale=0.4]{figures/lottery_diagram.jpg}
+\end{column}
+\end{columns}
 \end{frame}
 
 
-%
-% Problem statement
-%
-% Before we go into the details of our work, let's take a step back................
-% Ethereum is a distributed application platform on the blockchain.
-% Users may execute arbitrary code snippets running on the Ethereum 
-% Virtual Machine, EVM for short; we just saw an example of such a code snippet;
-% these are what we call smart contracts.
-% As you can imagine, writing EVM byte-code is not fun, a bit like 
-% writing assembly code by hand.
-% You might know about the Solidity programming language, which aimed
-% to simplify writing smart contracts; it's something like the 
-% PHP of smart contract programming languages, as it has few safety features.
-% Flint is an attempt at creating a less error prone programming
-% language. The underpinning philosophy is simplicity, and its design has been largely inspired by
-% Swift. Creating a safe language involves 
+% Codes snippets like the one with saw just now run on the Ethereum Virtual Machine, or
+% EVM for short. As you can imagine, writing EVM byte-code is not fun, a bit like 
+% writing assembly code by hand. You might know about the Solidity programming 
+% language, which aimed to simplify writing smart contracts; it's something like the 
+% PHP or JavaScript of smart contract programming languages, as it has few safety features.
+% Flint is an attempt to create a less error-prone programming
+% language. The underpinning philosophy is simplicity, and its design has been 
+% largely inspired by Swift. Creating a safe language involves 
 % prohibiting many avoidable programmer errors at compile-time. At the
 % moment, these avoidable errors put hundreds of millions of dollars
 % worth of cryptocurrencies at risk.
-%
 \begin{frame}{Problems with Ethereum Smart Contracts}
     \begin{itemize}
-        \item Smart contracts are immutable
+        \item Smart contracts are \textbf{immutable}
         \item Smart contracts are difficult to program with existing technologies
         \item Smart contracts \textbf{really need to be safe} as they directly handle currency
         \item Solidity does not provide a good solution as it lacks safety checks and features
@@ -114,13 +110,14 @@
 
 \sectionslide{Issues with Flint}
 % As mentioned before, as of October, there were still serious flaws with Flint.
-% In particular, Flint does not allow for external calls, i.e. function calls to
+% In particular, Flint did not allow for external calls, i.e. function calls to
 % other contracts, which are an absolute necessity to process currency.
 % In plain words, Flint cannot be used to develop smart contracts without external calls.
 % In addition, Flint - like Solidity - used to treat Ether as integers which 
 % could easily lead to "losing" currency. Remember that a contract is entirely controlled
 % by its code and that the code is immutable.
-% Also, Flint had no real ecosystem for development and no testing, meaning that there
+% Also, Flint had no real ecosystem for development and 
+% no unit testing, meaning that there
 % were plenty of additions and improvements for us to make.
 \begin{frame}{Issues with Flint}
     \begin{itemize}
@@ -132,6 +129,7 @@
 \end{frame}
 
 \sectionslide{Achievements}
+% We will now go through our achievements in this project.
 
 \subsection{Asset Traits with Self}
 
@@ -183,6 +181,48 @@
 \inputminted{swift}{code/polymorphic-self.flint}
 \end{frame}
 
+\subsection{General Improvements}
+% We have also implemented/fixed/improved a number of smaller features, many of which were found while trying to solve different problems.
+\begin{frame}
+\frametitle{General Improvements}
+\begin{itemize}
+    \item Right associativity of the dot operator
+    \item Unification of event and function declaration syntax
+    \item Function calls parameter passing/ordering
+    \item Testing
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+% Unified the declaration syntax for events and functions to increase clarity.
+\frametitle{Events and Functions}
+\begin{itemize}
+    \item Unify the declaration syntax
+    \item Implement default parameters for functions
+\end{itemize}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Before}
+	        \inputminted[fontsize=\small]{swift}{code/events-before.flint}
+	        \end{block}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{After}
+	        \inputminted[fontsize=\small]{swift}{code/events-after.flint}
+	        \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+% We came up with new logic for checking function call argument types, including for default parameters. We are also now enforcing labels and Swift-like ordering for parameters.
+\frametitle{Function Call Parameters}
+\begin{itemize}
+    \item Improved logic for parameter checking (includes default parameters)
+    \item Enforce labels and Swift-like ordering
+\end{itemize}
+\end{frame}
+
 \subsection{Unit Testing}
 \begin{frame}{Why Test?}
 \begin{itemize}
@@ -223,10 +263,10 @@
 
 \begin{frame}{Testing Framework}
 \begin{columns}
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.4\textwidth}
         \inputminted[fontsize=\tiny]{swift}{code/unit-test.flint}
     \end{column}
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.6\textwidth}
         \begin{itemize}
             \item XCTest integrated into Xcode and SPM
             \item Code requires extensive refactoring to make testing possible
@@ -238,53 +278,6 @@
 % We did not end up writing a lot of tests because we wanted to implement more features. 
 % The code is also written in a manner that requires refactoring into distinct units to make testing them in isolation possible.
 % For some features we took a Test Driven Development approach, developing a test and seeing it fail before covering the case in the implementation.
-\end{frame}
-
-\subsection{General Improvements}
-\begin{frame}
-% We have also implemented/fixed/improved a number of smaller features, many of which were found while trying to solve different problems.
-\frametitle{General Improvements}
-\begin{itemize}
-    \item Right associativity of the dot operator
-    \item Unification of event and function declaration syntax
-    \item Function calls parameter passing/ordering
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-% Due to the nature of the parser, the dot operator was right associative, making it completely impractical to access nested fields of a struct. This was fixed by performing rotations for the dot operator after parsing. 
-\frametitle{Right Associativity of the Dot Operator}
-\begin{itemize}
-    \item \mintinline{swift}{a.(b.(c.d))} vs \mintinline{swift}{((a.b).c).d}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-% Unified the declaration syntax for events and functions to increase clarity.
-\frametitle{Events and Functions}
-\begin{itemize}
-    \item Unify the declaration syntax
-    \item Implement default parameters for functions (previously only for events - not working)
-\end{itemize}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-	        \inputminted[fontsize=\small]{swift}{code/events-before.flint}
-	        \centering Before
-        \end{column}
-        \begin{column}{0.5\textwidth}
-	        \inputminted[fontsize=\small]{swift}{code/events-after.flint}
-	        \centering After
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}
-% We came up with new logic for checking function call argument types, including for default parameters. We are also now enforcing labels and Swift-like ordering for parameters.
-\frametitle{Function Call Parameters}
-\begin{itemize}
-    \item Improved logic for parameter checking (includes default parameters)
-    \item Enforce labels and Swift-like ordering
-\end{itemize}
 \end{frame}
 
 % These feed into the Demo
@@ -315,13 +308,49 @@
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+\begin{figure}
+\frametitle{LSP - Auto-Compilation}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/lsp-step-1.png}
+    \caption*{Auto-Compilation Step 1}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\frametitle{LSP - Auto-Compilation}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/lsp-step-2.png}
+    \caption*{Auto-Compilation Step 2}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\frametitle{LSP - Auto-Compilation}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/lsp-step-3.png}
+    \caption*{Auto-Compilation Step 3}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\frametitle{LSP - Auto-Compilation}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/lsp-step-4.png}
+    \caption*{Auto-Compilation Step 4}
+\end{figure}
+\end{frame}
+
 \subsection{External Calls with Error Handling}
 
 % Ethereum smart contracts are indeed Turing-complete, so it is possible to implement a wide variety of applications in EVM code. Naturally this would not be as useful if smart contracts could only be called by Ethereum users. So in EVM, smart contracts can call other smart contracts. This allows smart contracts to exchange data, but it is at the same time the mechanism used for paying Wei to other contracts.
 \begin{frame}{External Calls}
     \begin{itemize}
         \item Smart contracts can represent microservice-like architectures in Ethereum
-        \item `Calling' another contract $\Rightarrow$ data, Gas (computation time), and Wei
+        \item `Calling' another contract \(\Rightarrow\) data, Gas (computation time), and Wei
     \end{itemize}
 \end{frame}
 
@@ -375,9 +404,8 @@
 \subsection{Code Generation}
 
 \begin{frame}{Code Generation}
-
+\centering
 Wrong abstraction is the root of all evil.
-% what does this even mean
 \end{frame}
 
 \begin{frame}{Nested \texttt{do}-\texttt{catch}}
@@ -417,18 +445,13 @@ Wrong abstraction is the root of all evil.
 \inputminted{swift}{code/linear-types.flint}
 \end{frame}
 
-% Adding modules allows a contract definition to be split across multiple source files and for the inclusion and distribution of user-made libraries and frameworks.
+
 \subsection{Modularisation}
+% Adding modules allows a contract definition to be split across multiple source files and for the inclusion and distribution of user-made libraries and frameworks.
 
 \begin{frame}
 \frametitle{Modularisation}
-\begin{itemize}
-    \item Allow more complex contracts to be split into multiple files
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Modularisation Example}
+Allows more complex contracts to be split into multiple files \\
 \inputminted{swift}{code/modularisation.flint}
 \end{frame}
 
