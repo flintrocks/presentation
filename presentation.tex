@@ -48,7 +48,7 @@
 % Because of this, Franklin Schrans developed Flint under Susan's supervision. 
 % Flint is a programming language for smart contracts aimed to be much safer while being simple to use. 
 % However, Flint was not usable in practice due to the lack of essential features. 
-% For our third-year group project we worked on adding those features and 
+% For our third-year group project we worked on designing and adding those features to the compiler and 
 % improving the Flint ecosystem to make Flint more useful in the real world.*
 
 { % all template changes are local to this group.
@@ -67,9 +67,10 @@
 % To give you an idea of Flint is and what smart contracts are, here is 
 % a very simple example of one that works as a lottery.
 % The creator initialises the smart contract with a ticket price and a winning
-% number threshold used to determine a winner.
-% Anyone can then send currency to the contract which sends back the entire jackpot
-% if the owner wins. Everyone can verify the smart contract for themselves and knows
+% number threshold used to determine the winning probability of each ticket.
+% Anyone can then send currency, in this case Ether or rather its smaller denomination, Wei, 
+% to the contract which is added to the jackpot. If you win, the smart contract will transfer
+% the jackpot to you. Everyone can verify the smart contract for themselves and knows
 % that it cannot change, so the system does not rely on trust unlike lotteries 
 % where you need to trust the organisers not to tamper with the numbers.
 % We can think about a smart contract
@@ -141,6 +142,8 @@
     \item Flint traits are similar to Java's interfaces
     \item Captures the commonalities between different assets, like {\tt Wei}
 \end{itemize}
+% Flint already supported traits, which are like interfaces in Java.
+
 % Reducing duplication prevents a programmer from forgetting
 %   to implement safety precautions necessary for functions such as `transfer`
 \end{frame}
@@ -420,8 +423,8 @@ Wrong abstraction is the root of all evil.
 
 \begin{frame}{Refactor Code Generator}
 \begin{itemize}
-    \item String concatenation $\Rightarrow$ Representation for YUL IR.
-    \item New Emitter API for Codegen adequate for complex code generation.
+    \item String concatenation $\Rightarrow$ Representation for YUL IR
+    \item New Emitter API for Codegen adequate for complex code generation
 \end{itemize}
 \end{frame}
 
